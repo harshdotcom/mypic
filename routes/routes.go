@@ -22,5 +22,10 @@ func RegisterRoutes(r *gin.Engine) {
 			users.PUT("/:id", controllers.UpdateUser)
 			users.DELETE("/:id", controllers.DeleteUser)
 		}
+		files := protected.Group("/files")
+		{
+			files.POST("/upload", controllers.UploadFiles)
+			files.POST("/list", controllers.ListFiles)
+		}
 	}
 }

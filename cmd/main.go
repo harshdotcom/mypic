@@ -18,6 +18,7 @@ func main() {
 
 	config.ConnectDB()
 	r := gin.Default()
+	r.Static("/uploads", "./uploads")
 	routes.RegisterRoutes(r)
 	fmt.Println("Server starting on http://localhost:8080")
 	r.Run(":8080")
