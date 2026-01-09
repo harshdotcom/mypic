@@ -1,27 +1,12 @@
-Client → Router → Middleware → Controller → Service → Repository → Database
-                                     ↓
-                                  Response ←––––––––––––––––––––––––––––––
-
-mypic/
-│── cmd/                # Application entry point
-│── config/             # DB and JWT config
-│── controllers/        # HTTP handlers
-│── services/           # Business logic
-│── repositories/       # Database operations
-│── models/             # DB models
-│── routes/             # API route definitions
-│── middlewares/        # Auth middleware
-│── .env                # Environment variables
-│── go.mod / go.sum
-
-
 # 📸 mypic — Backend API
 
-A Go-based backend service built with **Gin**, **GORM**, and **MySQL** providing user authentication, profile management, and JWT-based authorization.
+Client → Router → Middleware → Controller → Service → Repository → Database → Response
+
+A Go-based backend service built with Gin, GORM, and MySQL providing user authentication, profile management, and JWT-based authorization.
 
 ---
 
-## 🚀 Tech Stack
+#  Tech Stack
 
 - Go (1.21+ recommended)
 - Gin (HTTP framework)
@@ -29,8 +14,41 @@ A Go-based backend service built with **Gin**, **GORM**, and **MySQL** providing
 - MySQL
 - JWT (authentication)
 - bcrypt (password hashing)
+- godotenv (env loading)
 
 ---
 
-## 📁 Project Structure
+#  Mysql Queries Need to Run
+
+CREATE DATABASE mypic_db;
+USE mypic_db;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_name VARCHAR(100) NOT NULL UNIQUE,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  user_password LONGTEXT NOT NULL,
+  user_logo_url LONGTEXT,
+  time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+---
+
+#  Required Libraries
+
+Install these before running:
+
+```bash
+go get github.com/gin-gonic/gin          # HTTP server
+go get gorm.io/gorm                     # ORM
+go get gorm.io/driver/mysql             # MySQL driver
+go get golang.org/x/crypto/bcrypt       # Password hashing
+go get github.com/golang-jwt/jwt/v5     # JWT auth
+go get github.com/joho/godotenv          # Load env file
+
+
+
+
 

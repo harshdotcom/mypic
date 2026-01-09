@@ -18,14 +18,15 @@ type SignupRequest struct {
 }
 
 type LoginRequest struct {
-	Identifier   string `json:"identifier"` // email or username
+	Identifier   string `json:"identifier"`
 	UserPassword string `json:"userPassword"`
 }
 
 type UpdateUserRequest struct {
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	UserLogoURL string `json:"userLogoURL"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	UserLogoURL  string `json:"userLogoURL"`
+	UserPassword string `json:"userPassword"`
 }
 
 func Signup(c *gin.Context) {
@@ -98,7 +99,13 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	err = services.UpdateUser(uint(id), req.Name, req.Email, req.UserLogoURL)
+	err = services.UpdateUser(
+		uint(id),
+		req.Name,
+		req.Email,
+		req.UserLogoURL,
+		req.UserPassword,
+	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
