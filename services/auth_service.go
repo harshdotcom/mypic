@@ -63,7 +63,7 @@ func Login(identifier, password string) (*models.User, error) {
 	return user, nil
 }
 
-func UpdateUser(id uint, name, email, logo string) error {
+func UpdateUser(id uint, name, email, logo string, password string) error {
 	user, err := repositories.GetUserByID(id)
 	if err != nil {
 		return errors.New("user not found")
@@ -77,6 +77,13 @@ func UpdateUser(id uint, name, email, logo string) error {
 	}
 	if logo != "" {
 		user.UserLogoURL = logo
+	}
+	if password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		user.UserPassword = string(hash)
 	}
 
 	return repositories.UpdateUser(user)
