@@ -33,7 +33,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userId", claims["userId"])
+		userIDFloat, ok := claims["userId"].(float64)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token payload"})
+			c.Abort()
+			return
+		}
+
+		c.Set("userId", uint(userIDFloat))
 		c.Next()
 	}
 }

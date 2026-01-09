@@ -30,3 +30,7 @@ Thumbs.db
 
 # Vendor (if you don't commit it)
 vendor/
+
+# Uploaded files
+/uploads/
+/uploads/*
