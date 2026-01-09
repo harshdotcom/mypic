@@ -13,7 +13,11 @@ import (
 var allowedExtensions = []string{".png", ".jpg", ".jpeg", ".pdf", ".txt"}
 
 func UploadFiles(userID uint, files []*multipart.FileHeader) ([]models.File, error) {
-	storage := storage.NewLocalStorage()
+	// storage := storage.NewLocalStorage()
+	storage, err := storage.NewS3Storage()
+	if err != nil {
+		return nil, err
+	}
 	var result []models.File
 
 	for _, file := range files {
