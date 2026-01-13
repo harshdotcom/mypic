@@ -26,6 +26,7 @@ func RegisterRoutes(r *gin.Engine) {
 		{
 			files.POST("/upload", controllers.UploadFiles)
 			files.POST("/list", controllers.ListFiles)
+			files.DELETE("/:id", controllers.DeleteFile)
 		}
 	}
 }

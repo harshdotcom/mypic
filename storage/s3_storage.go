@@ -58,3 +58,11 @@ func (s *S3Storage) Upload(file *multipart.FileHeader) (storedName, url string, 
 	url = fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", s.Bucket, s.Region, storedName)
 	return storedName, url, nil
 }
+
+func (s *S3Storage) Delete(storedName string) error {
+	_, err := s.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(storedName),
+	})
+	return err
+}
