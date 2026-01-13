@@ -42,3 +42,13 @@ func ListFilesByUser(
 	err := query.Find(&files).Error
 	return files, err
 }
+
+func GetFileByID(id uint) (*models.File, error) {
+	var file models.File
+	err := config.DB.First(&file, id).Error
+	return &file, err
+}
+
+func DeleteFile(file *models.File) error {
+	return config.DB.Delete(file).Error
+}

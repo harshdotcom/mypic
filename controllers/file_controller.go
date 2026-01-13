@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"mypic/services"
 
@@ -56,4 +57,23 @@ func ListFiles(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, files)
+}
+
+func DeleteFile(c *gin.Context) {
+	userID := c.GetUint("userId")
+
+	idParam := c.Param("id")
+	fileID, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid file id"})
+		return
+	}
+
+	err = services.DeleteUserFile(userID, uint(fileID))
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "file deleted successfully"})
 }

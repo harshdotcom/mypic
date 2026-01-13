@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"mime/multipart"
 	"path/filepath"
 	"strings"
@@ -65,4 +66,26 @@ func ListUserFiles(
 ) ([]models.File, error) {
 
 	return repositories.ListFilesByUser(userID, search, sortBy, order)
+}
+
+func DeleteUserFile(userID uint, fileID uint) error {
+	file, err := repositories.GetFileByID(fileID)
+	if err != nil {
+		return err
+	}
+
+	if file.UserID != userID {
+		return errors.New("unauthorized")
+	}
+
+	storage, err := storage.NewS3Storage()
+	if err != nil {
+		return err
+	}
+
+	if err := storage.Delete(file.StoredName); err != nil {
+		return err
+	}
+
+	return repositories.DeleteFile(file)
 }
