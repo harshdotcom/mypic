@@ -12,6 +12,7 @@ func RegisterRoutes(r *gin.Engine) {
 	{
 		auth.POST("/signup", controllers.Signup)
 		auth.POST("/login", controllers.Login)
+		auth.POST("/google", controllers.GoogleLogin)
 	}
 
 	protected := r.Group("/api")

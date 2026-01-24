@@ -1,12 +1,15 @@
 package services
 
 import (
+	"context"
 	"errors"
+	"os"
 
 	"mypic/models"
 	"mypic/repositories"
 
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/api/idtoken"
 )
 
 func Signup(userName, name, email, password, logo string) error {
@@ -33,6 +36,7 @@ func Signup(userName, name, email, password, logo string) error {
 		Email:        email,
 		UserPassword: string(hash),
 		UserLogoURL:  logo,
+		AuthProvider: "LOCAL", // ✅ THIS IS THE IMPORTANT ADDITION
 	}
 
 	return repositories.CreateUser(&user)
@@ -54,6 +58,11 @@ func Login(identifier, password string) (*models.User, error) {
 		if err != nil {
 			return nil, errors.New("invalid credentials")
 		}
+	}
+
+	// ✅ NEW CHECK (important)
+	if user.AuthProvider == "GOOGLE" {
+		return nil, errors.New("please login using Google")
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.UserPassword), []byte(password)) != nil {
@@ -96,4 +105,48 @@ func DeleteUser(id uint) error {
 	}
 
 	return repositories.DeleteUser(user)
+}
+
+func GoogleLogin(idToken string) (*models.User, error) {
+	if idToken == "" {
+		return nil, errors.New("id token is required")
+	}
+
+	// Verify token with Google
+	payload, err := idtoken.Validate(context.Background(), idToken, os.Getenv("GOOGLE_CLIENT_ID"))
+	if err != nil {
+		return nil, errors.New("invalid google token")
+	}
+
+	// Extract user info from token
+	email, ok := payload.Claims["email"].(string)
+	if !ok || email == "" {
+		return nil, errors.New("email not found in google token")
+	}
+
+	name, _ := payload.Claims["name"].(string)
+	picture, _ := payload.Claims["picture"].(string)
+
+	// Check if user already exists
+	user, err := repositories.GetUserByEmail(email)
+	if err == nil {
+		// User exists → return it
+		return user, nil
+	}
+
+	// User does not exist → create new one
+	newUser := models.User{
+		UserName:     email, // or generate from email
+		Name:         name,
+		Email:        email,
+		UserLogoURL:  picture,
+		UserPassword: "",       // no password for Google users
+		AuthProvider: "GOOGLE", // IMPORTANT
+	}
+
+	if err := repositories.CreateUser(&newUser); err != nil {
+		return nil, err
+	}
+
+	return &newUser, nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"mypic/config"
-	"mypic/middlewares"
 	"mypic/routes"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +19,7 @@ func main() {
 	config.ConnectDB()
 	r := gin.Default()
 
-	r.Use(middlewares.CORSMiddleware())
+	// r.Use(middlewares.CORSMiddleware())
 
 	r.Static("/uploads", "./uploads")
 	routes.RegisterRoutes(r)

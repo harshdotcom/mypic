@@ -29,6 +29,10 @@ type UpdateUserRequest struct {
 	UserPassword string `json:"userPassword"`
 }
 
+type GoogleLoginRequest struct {
+	IdToken string `json:"idToken"`
+}
+
 func Signup(c *gin.Context) {
 	var req SignupRequest
 
@@ -77,10 +81,11 @@ func Login(c *gin.Context) {
 		"message": "login successful",
 		"token":   token,
 		"user": gin.H{
-			"id":       user.ID,
-			"userName": user.UserName,
-			"name":     user.Name,
-			"email":    user.Email,
+			"id":          user.ID,
+			"userName":    user.UserName,
+			"name":        user.Name,
+			"email":       user.Email,
+			"userLogoURL": user.UserLogoURL,
 		},
 	})
 }
@@ -129,4 +134,37 @@ func DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+}
+
+func GoogleLogin(c *gin.Context) {
+	var req GoogleLoginRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	user, err := services.GoogleLogin(req.IdToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := config.GenerateToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "google login successful",
+		"token":   token,
+		"user": gin.H{
+			"id":          user.ID,
+			"userName":    user.UserName,
+			"name":        user.Name,
+			"email":       user.Email,
+			"userLogoURL": user.UserLogoURL,
+		},
+	})
 }
