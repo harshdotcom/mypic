@@ -61,11 +61,24 @@ func isAllowed(ext string) bool {
 func ListUserFiles(
 	userID uint,
 	search string,
+	extension string,
+	mimeType string,
+	startDate string,
+	endDate string,
 	sortBy string,
 	order string,
 ) ([]models.File, error) {
 
-	return repositories.ListFilesByUser(userID, search, sortBy, order)
+	return repositories.ListFilesByUser(
+		userID,
+		search,
+		extension,
+		mimeType,
+		startDate,
+		endDate,
+		sortBy,
+		order,
+	)
 }
 
 func DeleteUserFile(userID uint, fileID uint) error {

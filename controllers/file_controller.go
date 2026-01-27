@@ -10,9 +10,13 @@ import (
 )
 
 type ListFilesRequest struct {
-	Search string `json:"search"`
-	SortBy string `json:"sortBy"` // "name" or "date"
-	Order  string `json:"order"`  // "asc" or "desc"
+	Search    string `json:"search"`
+	Extension string `json:"extension"` // ".png", ".jpg"
+	MimeType  string `json:"mimeType"`  // "image/png"
+	StartDate string `json:"startDate"` // "2026-01-23"
+	EndDate   string `json:"endDate"`   // "2026-01-24"
+	SortBy    string `json:"sortBy"`    // "name" | "date" | "size" | "type"
+	Order     string `json:"order"`     // "asc" | "desc"
 }
 
 // Upload multiple files
@@ -41,6 +45,7 @@ func UploadFiles(c *gin.Context) {
 }
 
 // List user files (POST-based)
+// List user files (POST-based)
 func ListFiles(c *gin.Context) {
 	userID := c.GetUint("userId")
 
@@ -50,7 +55,16 @@ func ListFiles(c *gin.Context) {
 		return
 	}
 
-	files, err := services.ListUserFiles(userID, req.Search, req.SortBy, req.Order)
+	files, err := services.ListUserFiles(
+		userID,
+		req.Search,
+		req.Extension,
+		req.MimeType,
+		req.StartDate,
+		req.EndDate,
+		req.SortBy,
+		req.Order,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
