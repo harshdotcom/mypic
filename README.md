@@ -15,7 +15,7 @@ A Go-based backend service built with Gin, GORM, and MySQL providing user authen
 - JWT (authentication)
 - bcrypt (password hashing)
 - godotenv (env loading)
-
+For Front end we are using angular
 ---
 
 #  Mysql Queries Need to Run
